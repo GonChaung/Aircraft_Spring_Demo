@@ -16,18 +16,19 @@ public class PositionController {
     private AircraftRepository repository;
     private WebClient client = WebClient.create("http://localhost:7634/aircraft");
 
+
     @GetMapping("/aircraft")
-    public String getCurrentAircraftPosition(Model model){
+    public String getCurrentAircraftPosition(Model model) {
         repository.deleteAll();
 
         client.get()
                 .retrieve()
                 .bodyToFlux(Aircraft.class)
-                .filter(plane -> plane.getReg().isEmpty())
+                .filter(plane -> !plane.getReg().isEmpty())
                 .toStream()
                 .forEach(repository::save);
 
-        model.addAttribute("currentPositions " , repository.findAll());
+        model.addAttribute("currentPositions", repository.findAll());
         return "positions";
     }
 }
